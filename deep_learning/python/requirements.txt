@@ -1,0 +1,7 @@
+pytorch_lightning
+torch
+torchvision
+tqdm
+opencv-python
+albumentations
+pandas
