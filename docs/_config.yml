@@ -13,7 +13,6 @@
 # you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
-minimal_mistakes_skin    : "air"
 title: "Francisco Rivas PhD"
 email: "franciscomiguel.rivas@urjc.es"
 description: "Deep Learning research on autonomous driving"
@@ -26,6 +25,9 @@ logo: /assets/images/peloto.png
 # Build settings
 markdown: kramdown
 theme: minimal-mistakes-jekyll
+plugins:
+  - jekyll-feed
+  - jekyll-include-cache
 
 
 # Exclude from processing.
@@ -41,7 +43,7 @@ theme: minimal-mistakes-jekyll
 #   - vendor/ruby/
 
 
-#remote_theme: "mmistakes/minimal-mistakes@4.23.0"
+remote_theme: "mmistakes/minimal-mistakes@4.23.0"
 
 
 words_per_minute         : 200
@@ -122,58 +124,6 @@ analytics:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-############################ EDIT THIS SECTION ###############################
-# PROFILE
-# Site Author
-# author:
-#   name             : "Sergio Paniego"
-#   avatar           : "/assets/images/profile.jpg"
-#   bio              : "Site for my documentation"
-#   location         : "Madrid"
-#   email            :
-#   links:
-#     - label: "Email"
-#       icon: "fas fa-fw fa-envelope-square"
-#       url: yourmail@domain.com
-#     - label: "About Me"
-#       icon: "fas fa-fw fa-link"
-#       url: "yoursite.com"
-#     - label: "Twitter"
-#       icon: "fab fa-fw fa-twitter-square"
-#       url: "https://twitter.com/jderobot"
-#     - label: "GitHub"
-#       icon: "fab fa-fw fa-github"
-#       url: "https://github.com/JdeRobot"
-    #- label: "Youtube"
-    #  icon: "fab fa-fw fa-youtube"
-    #  url: "https://www.youtube.com/channel/UCgmUgpircYAv_QhLQziHJOQ"
-
-
-#################################################################################
-
-
-
-
-
-
-
-
-
-
-
-
 # Site Footer
 footer:
   links:
@@ -182,7 +132,7 @@ footer:
       url: "https://twitter.com/jderobot"
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
-      url: "https://github.com/sergiopaniego"
+      url: "https://github.com/chanfr"
     #- label: "GitLab"
     #  icon: "fab fa-fw fa-gitlab"
     #  url:
