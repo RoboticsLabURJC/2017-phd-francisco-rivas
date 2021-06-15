@@ -26,9 +26,11 @@ github_username:  chanfr
 
 # Build settings
 markdown: kramdown
-theme: minima
+theme: minimal-mistakes-jekyll
 plugins:
   - jekyll-feed
+  - jekyll-include-cacheo
+
 
 # Exclude from processing.
 # The following items will not be processed, by default. Create a custom list
@@ -41,3 +43,6 @@ plugins:
 #   - vendor/cache/
 #   - vendor/gems/
 #   - vendor/ruby/
+
+
+remote_theme: "mmistakes/minimal-mistakes@4.23.0"
