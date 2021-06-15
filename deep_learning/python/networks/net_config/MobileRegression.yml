@@ -1,0 +1,11 @@
+MobileRegression:
+  mode: regression
+  backend: mobilenet_v3_large
+  fc_head: mobilenet_v3_large
+  pretrained: true
+  weight_loss: false
+  base_size: 320
+  batch_size: 50
+  regression_data :
+    - w
+    - v

@@ -1,5 +1,6 @@
 import json
 import os
+import shutil
 from random import shuffle
 
 import cv2
@@ -17,19 +18,20 @@ from torch.utils.data import DataLoader
 import torchvision
 import numpy as np
 
-from dataloaders.visual_control_encoder import VisualControlEncoder
+from net_config.net_config import NetConfig
 from dataloaders.visual_control_simulated import VisualControlSimulated
 from visual_control_utils.fix_json import read_malformed_json
 from visual_control_utils.logits_conversion import from_logit_to_estimation, from_logit_to_estimation_class
 from visual_control_utils.visual_datset_format import load_dataset
-from visual_control_utils.visualization import add_labels_to_image
+from visual_control_utils.visualization import add_labels_to_image, add_arrow_prediction
+from models.backends.backends import get_backend_by_name
 
 
 class VisualControl(pl.LightningModule):
 
     def __init__(self, dataset_path: str, lr: float, base_size: int,
                  batch_size: int, num_workers=6, pos_weight=True,
-                 dataset_encoder_type=VisualControlEncoder.WV_3_2_CLASSES):
+                 net_config:NetConfig=None):
         super().__init__()
 
         # Set our init args as class attributes
@@ -40,36 +42,52 @@ class VisualControl(pl.LightningModule):
         self.num_workers = num_workers
         self.pos_weight = pos_weight
         self.pos_weight_values = None
-        self.encoder = VisualControlEncoder(dataset_encoder_type)
+        self.net_config = net_config
 
         # Hardcode some dataset specific attributes
-        self.num_classes = self.encoder.n_classes
+        self.num_classes = self.net_config.n_classes
         self.dims = (1, base_size, base_size)
 
+        self.model = get_backend_by_name(self.net_config.backend)(pretrained=self.net_config.pretrained)
 
-
-        # Define PyTorch model
-        resnet = False
-        if resnet:
-            self.model = torchvision.models.resnet50(pretrained=True)
-            self.model.fc = nn.Sequential(
-                nn.Linear(self.model.fc.in_features, 1280),
-                nn.Hardswish(inplace=True),
-                nn.Dropout(p=0.5, inplace=True),
-                nn.Linear(1280, self.num_classes),
-            )
-        else:
-            self.model = torchvision.models.mobilenet_v3_large(pretrained=True)
+        if self.net_config.fc_head == "mobilenet_v3_large":
             self.model.classifier = nn.Sequential(
                 nn.Linear(self.model.classifier[0].in_features, 1280),
                 nn.Hardswish(inplace=True),
                 nn.Dropout(p=0.2, inplace=True),
                 nn.Linear(1280, self.num_classes),
             )
+        elif self.net_config.fc_head == "pilotnet":
+            self.model.classifier = nn.Sequential(
+                nn.Linear(69696, 1164),
+                nn.Linear(1164, 100),
+                nn.Linear(100, 50),
+                nn.Linear(50, 10),
+                nn.Linear(10, self.num_classes)
+            )
+
+        # Define PyTorch model
+        # resnet = False
+        # if resnet:
+        #     self.model = torchvision.models.resnet50(pretrained=True)
+        #     self.model.fc = nn.Sequential(
+        #         nn.Linear(self.model.fc.in_features, 1280),
+        #         nn.Hardswish(inplace=True),
+        #         nn.Dropout(p=0.5, inplace=True),
+        #         nn.Linear(1280, self.num_classes),
+        #     )
+        # else:
+        #     self.model = torchvision.models.mobilenet_v3_large(pretrained=True)
+        #     self.model.classifier = nn.Sequential(
+        #         nn.Linear(self.model.classifier[0].in_features, 1280),
+        #         nn.Hardswish(inplace=True),
+        #         nn.Dropout(p=0.2, inplace=True),
+        #         nn.Linear(1280, self.num_classes),
+        #     )
 
     def forward(self, x):
         x = self.model(x)
-        if self.encoder.head_type == VisualControlEncoder.CLASSIFICATION_TYPE:
+        if self.net_config.head_type == NetConfig.CLASSIFICATION_TYPE:
             x = torch.sigmoid(x)
         return x
 
@@ -77,15 +95,15 @@ class VisualControl(pl.LightningModule):
         x, y = batch
         logits = self.model(x["image"])
 
-        if self.encoder.head_type == VisualControlEncoder.CLASSIFICATION_TYPE:
+        if self.net_config.head_type == NetConfig.CLASSIFICATION_TYPE:
             if self.pos_weight_values is not None:
                 loss_fn = nn.BCEWithLogitsLoss(pos_weight=torch.from_numpy(self.pos_weight_values).to(self.device))
             else:
                 loss_fn = nn.BCEWithLogitsLoss()
-        elif self.encoder.head_type == VisualControlEncoder.REGRESSION_TYPE:
+        elif self.net_config.head_type == NetConfig.REGRESSION_TYPE:
             loss_fn = nn.MSELoss()
         else:
-            raise Exception("Encoder head type: {} not supported".format(self.encoder.head_type))
+            raise Exception("NetConfig head type: {} not supported".format(self.net_config.head_type))
 
         loss = loss_fn(logits, y)
         self.log('train_loss', loss)
@@ -98,19 +116,19 @@ class VisualControl(pl.LightningModule):
         x, y = batch
         logits = self.model(x["image"])
 
-        if self.encoder.head_type == VisualControlEncoder.CLASSIFICATION_TYPE:
+        if self.net_config.head_type == NetConfig.CLASSIFICATION_TYPE:
             loss_fn = nn.BCEWithLogitsLoss()
             loss = loss_fn(logits, y)
             acc = []
             for output_key in ["w", "v"]:
                 current_estimations = []
                 gt = []
-                if output_key in self.encoder.softmax_config:
+                if output_key in self.net_config.softmax_config:
                     for idx, pred in enumerate(logits):
-                        class_idx = from_logit_to_estimation_class(pred, self.encoder)[output_key]
+                        class_idx = from_logit_to_estimation_class(pred, self.net_config)[output_key]
                         current_estimations.append(class_idx)
                         current_gt = y[idx].cpu().numpy()
-                        current_gt = [current_gt[i] for i in self.encoder.softmax_config[output_key]]
+                        current_gt = [current_gt[i] for i in self.net_config.softmax_config[output_key]]
                         gt.append(np.argmax(current_gt, axis=0))
 
                 preds = torch.IntTensor(current_estimations).to(self.device)
@@ -128,7 +146,7 @@ class VisualControl(pl.LightningModule):
                     # current_prediction = torch.sigmoid(logits[i].to("cpu").detach())
                     current_prediction = logits[i].to("cpu").detach()
 
-                    one_hot = from_logit_to_estimation(current_prediction, self.encoder)
+                    one_hot = from_logit_to_estimation(current_prediction, self.net_config)
 
                     image *= (0.229, 0.224, 0.225)
                     image += (0.485, 0.456, 0.406)
@@ -143,13 +161,13 @@ class VisualControl(pl.LightningModule):
                 grid = torchvision.utils.make_grid(sample_imgs, nrow=5)
                 self.logger.experiment.add_image('generated_images', grid, self.current_epoch)
                 self.log('val_acc', acc, prog_bar=True)
-        elif self.encoder.head_type == VisualControlEncoder.REGRESSION_TYPE:
+        elif self.net_config.head_type == NetConfig.REGRESSION_TYPE:
             loss_fn = nn.MSELoss()
             loss = loss_fn(logits, y)
             self.log('rmse', torch.sqrt(loss), prog_bar=True)
             if batch_idx == 0:
                 images_to_show = []
-                for i in range(0, 10):
+                for i in range(0, min(10, len(x["image"]))):
                     image = x["image"][i].to("cpu").numpy().transpose([1, 2, 0])
                     gt = y[i].to("cpu").numpy()
                     # current_prediction = torch.sigmoid(logits[i].to("cpu").detach())
@@ -168,7 +186,7 @@ class VisualControl(pl.LightningModule):
                 grid = torchvision.utils.make_grid(sample_imgs, nrow=5)
                 self.logger.experiment.add_image('generated_images', grid, self.current_epoch)
         else:
-            raise Exception("Encoder head type: {} not supported".format(self.encoder.head_type))
+            raise Exception("NetConfig head type: {} not supported".format(self.net_config.head_type))
 
         self.log('val_loss', loss, prog_bar=True)
 
@@ -250,12 +268,16 @@ class VisualControl(pl.LightningModule):
 
     def setup(self, stage=None):
 
-        if self.encoder.head_type != VisualControlEncoder.CLASSIFICATION_TYPE:
+        #copy network config
+        os.makedirs(self.logger.log_dir)
+        shutil.copy(self.net_config.config_file, os.path.join(self.logger.log_dir, "config.yaml"))
+
+        if self.net_config.head_type != NetConfig.CLASSIFICATION_TYPE:
             self.pos_weight = None
         try:
             if self.pos_weight:
                 val_set = VisualControlSimulated(os.path.join(self.dataset_path, "Train"), self.valid_dict,
-                                         self.base_size, self.encoder, split='val')
+                                         self.base_size, self.net_config, split='val')
 
                 ones_count = np.zeros(self.num_classes)
                 for i in tqdm(range(0, len(val_set))):
@@ -273,7 +295,7 @@ class VisualControl(pl.LightningModule):
 
     def train_dataloader(self):
         train_set = VisualControlSimulated(os.path.join(self.dataset_path, "Train"), self.train_dict,
-                                           self.base_size, self.encoder, split='train')
+                                           self.base_size, self.net_config, split='train')
         train_loader = DataLoader(train_set, batch_size=self.batch_size,
                                   num_workers=self.num_workers)
 
@@ -281,7 +303,7 @@ class VisualControl(pl.LightningModule):
 
     def val_dataloader(self):
         val_set = VisualControlSimulated(os.path.join(self.dataset_path, "Train"), self.valid_dict,
-                                         self.base_size, self.encoder, split='val')
+                                         self.base_size, self.net_config, split='val')
         valid_loader = DataLoader(val_set, batch_size=self.batch_size,
                                   num_workers=self.num_workers)
         return valid_loader

@@ -10,7 +10,7 @@ import numpy as np
 from albumentations.pytorch import ToTensorV2
 from torch.utils.data import Dataset
 
-from dataloaders.visual_control_encoder import VisualControlEncoder
+from net_config.net_config import NetConfig
 
 
 class VisualControlSimulated(Dataset):
@@ -19,7 +19,7 @@ class VisualControlSimulated(Dataset):
                  base_dir: str,
                  dataset: dict,
                  base_size: int,
-                 encoder: VisualControlEncoder,
+                 encoder: NetConfig,
                  split='train'
                  ):
         """

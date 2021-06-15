@@ -1,0 +1,50 @@
+WV_9_4_CLASSES:
+  mode: classification
+  backend: mobilenet_v3_large
+  fc_head: mobilenet_v3_large
+  pretrained: true
+  weight_loss: true
+  base_size: 418
+  batch_size: 40
+  classification_data:
+    w:
+      - radically_left:
+          input: [ None, 2]
+          output: 2
+      - strongly_left:
+          input: [ 2, 1]
+          output: 1.5
+      - moderately_left:
+          input: [ 1, 0.5]
+          output: 0.7
+      - slightly_left:
+          input: [ 0.5, 0.1]
+          output: 0.3
+      - slight:
+          input: [ 0.1, -0.1]
+          output: 0
+      - slightly_right:
+          input: [ -0.1, -0.5]
+          output: -0.3
+      - moderately_right:
+          input: [ -0.5, -1]
+          output: -0.7
+      - strongly_right:
+          input: [-1, -2]
+          output: -1.5
+      - radically_right:
+          input: [-2, None]
+          output: -2
+    v:
+      - very_fast:
+          input: [ None, 11]
+          output: 12
+      - fast:
+          input: [ 11, 9]
+          output: 10
+      - moderate:
+          input: [ 9 , 7]
+          output: 8
+      - slow:
+          input: [ 7 , None]
+          output: 5

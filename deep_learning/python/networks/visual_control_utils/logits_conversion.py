@@ -1,11 +1,11 @@
 import torch
 
-from dataloaders.visual_control_encoder import VisualControlEncoder
+from net_config.net_config import NetConfig
 
 import numpy as np
 
 
-def from_logit_to_estimation(logit, encoder:VisualControlEncoder):
+def from_logit_to_estimation(logit, encoder:NetConfig):
     output = np.array([])
     for output_key in ["w", "v"]:
         if output_key in encoder.softmax_config:
@@ -16,7 +16,7 @@ def from_logit_to_estimation(logit, encoder:VisualControlEncoder):
     return output
 
 
-def from_logit_to_estimation_class(logit, encoder:VisualControlEncoder):
+def from_logit_to_estimation_class(logit, encoder:NetConfig):
     output = {}
     for output_key in ["w", "v"]:
         if output_key in encoder.softmax_config:
@@ -28,7 +28,7 @@ def from_logit_to_estimation_class(logit, encoder:VisualControlEncoder):
 
 
 
-def from_one_hot_to_class(encoded, encoder:VisualControlEncoder):
+def from_one_hot_to_class(encoded, encoder:NetConfig):
     output = {}
     for output_key in ["w", "v"]:
         if output_key in encoder.softmax_config:
