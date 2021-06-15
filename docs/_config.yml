@@ -16,9 +16,9 @@ minimal_mistakes_skin    : "air"
 
 # Site Settings
 #locale                   : "en-US"
-title                    : "Sergio Paniego PhD"
+title                    : "Francisco Rivas PhD"
 title_separator          : "-"
-subtitle                 : "Artificial Intelligence"
+subtitle                 : "Computer Vision and Machine Learning"
 name                     : "JdeRobot"
 description              : "Programming Robot Intelligence"
 url                      :
@@ -106,58 +106,6 @@ analytics:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-############################ EDIT THIS SECTION ###############################
-# PROFILE
-# Site Author
-# author:
-#   name             : "Sergio Paniego"
-#   avatar           : "/assets/images/profile.jpg"
-#   bio              : "Site for my documentation"
-#   location         : "Madrid"
-#   email            :
-#   links:
-#     - label: "Email"
-#       icon: "fas fa-fw fa-envelope-square"
-#       url: yourmail@domain.com
-#     - label: "About Me"
-#       icon: "fas fa-fw fa-link"
-#       url: "yoursite.com"
-#     - label: "Twitter"
-#       icon: "fab fa-fw fa-twitter-square"
-#       url: "https://twitter.com/jderobot"
-#     - label: "GitHub"
-#       icon: "fab fa-fw fa-github"
-#       url: "https://github.com/JdeRobot"
-    #- label: "Youtube"
-    #  icon: "fab fa-fw fa-youtube"
-    #  url: "https://www.youtube.com/channel/UCgmUgpircYAv_QhLQziHJOQ"
-
-
-#################################################################################
-
-
-
-
-
-
-
-
-
-
-
-
 # Site Footer
 footer:
   links:
@@ -166,7 +114,7 @@ footer:
       url: "https://twitter.com/jderobot"
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
-      url: "https://github.com/sergiopaniego"
+      url: "https://github.com/chanfr"
     #- label: "GitLab"
     #  icon: "fab fa-fw fa-gitlab"
     #  url:
