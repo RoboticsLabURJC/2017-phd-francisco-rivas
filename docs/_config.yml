@@ -1,51 +1,33 @@
 # Welcome to Jekyll!
 #
-# This config file is meant for settings that affect your whole blog, values
-# which you are expected to set up once and rarely edit after that. If you find
-# yourself editing this file very often, consider using Jekyll's data files
-# feature for the data you need to update frequently.
-#
+# This config file is meant for settings that affect your entire site, values
+# which you are expected to set up once and rarely need to edit after that.
 # For technical reasons, this file is *NOT* reloaded automatically when you use
-# 'bundle exec jekyll serve'. If you change this file, please restart the server process.
+# `jekyll serve`. If you change this file, please restart the server process.
 
-# Site settings
-# These are used to personalize your new site. If you look in the HTML files,
-# you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
-# You can create any custom variable you would like, and they will be accessible
-# in the templates via {{ site.myvariable }}.
-title: "Francisco Rivas PhD"
-email: "franciscomiguel.rivas@urjc.es"
-description: "Deep Learning research on autonomous driving"
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "" # the base hostname & protocol for your site, e.g. http://example.com
-twitter_username: chanfr
-github_username:  chanfr
-logo: /assets/images/peloto.png
+# Theme Settings
+#
+# Review documentation to determine if you should use `theme` or `remote_theme`
+# https://mmistakes.github.io/minimal-mistakes/docs/quick-start-guide/#installing-the-theme
 
-# Build settings
-markdown: kramdown
-theme: minimal-mistakes-jekyll
-plugins:
-  - jekyll-feed
-  - jekyll-include-cache
+# theme                  : "minimal-mistakes-jekyll"
+# remote_theme           : "mmistakes/minimal-mistakes"
+minimal_mistakes_skin    : "air"
 
-
-# Exclude from processing.
-# The following items will not be processed, by default. Create a custom list
-# to override the default setting.
-# exclude:
-#   - Gemfile
-#   - Gemfile.lock
-#   - node_modules
-#   - vendor/bundle/
-#   - vendor/cache/
-#   - vendor/gems/
-#   - vendor/ruby/
-
-
-remote_theme: "mmistakes/minimal-mistakes@4.23.0"
-
-
+# Site Settings
+#locale                   : "en-US"
+title                    : "Sergio Paniego PhD"
+title_separator          : "-"
+subtitle                 : "Artificial Intelligence"
+name                     : "JdeRobot"
+description              : "Programming Robot Intelligence"
+url                      :
+baseurl                  : # the subpath of your site, e.g. "/blog"
+repository               :
+teaser                   : # path of fallback teaser image, e.g. "/assets/images/500x300.png"
+logo                     : /assets/images/peloto.png
+masthead_title           : # overrides the website title displayed in the masthead, use " " for no title
+# breadcrumbs            : false # true, false (default)
 words_per_minute         : 200
 comments:
   provider               : # false (default), "disqus", "discourse", "facebook", "staticman", "staticman_v2", "utterances", "custom"
@@ -124,6 +106,58 @@ analytics:
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+############################ EDIT THIS SECTION ###############################
+# PROFILE
+# Site Author
+# author:
+#   name             : "Sergio Paniego"
+#   avatar           : "/assets/images/profile.jpg"
+#   bio              : "Site for my documentation"
+#   location         : "Madrid"
+#   email            :
+#   links:
+#     - label: "Email"
+#       icon: "fas fa-fw fa-envelope-square"
+#       url: yourmail@domain.com
+#     - label: "About Me"
+#       icon: "fas fa-fw fa-link"
+#       url: "yoursite.com"
+#     - label: "Twitter"
+#       icon: "fab fa-fw fa-twitter-square"
+#       url: "https://twitter.com/jderobot"
+#     - label: "GitHub"
+#       icon: "fab fa-fw fa-github"
+#       url: "https://github.com/JdeRobot"
+    #- label: "Youtube"
+    #  icon: "fab fa-fw fa-youtube"
+    #  url: "https://www.youtube.com/channel/UCgmUgpircYAv_QhLQziHJOQ"
+
+
+#################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
 # Site Footer
 footer:
   links:
@@ -132,7 +166,7 @@ footer:
       url: "https://twitter.com/jderobot"
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
-      url: "https://github.com/chanfr"
+      url: "https://github.com/sergiopaniego"
     #- label: "GitLab"
     #  icon: "fab fa-fw fa-gitlab"
     #  url:
@@ -305,3 +339,4 @@ defaults:
       comments: true
       share: true
       related: true
+
