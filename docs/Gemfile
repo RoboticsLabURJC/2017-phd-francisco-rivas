@@ -18,6 +18,9 @@ gem "minima", "~> 2.0"
 # gem "github-pages", group: :jekyll_plugins
 gem "github-pages", "~> 215", group: :jekyll_plugins
 
+gem "minimal-mistakes-jekyll"
+
+
 
 # If you have any plugins, put them here!
 group :jekyll_plugins do
