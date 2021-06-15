@@ -41,7 +41,7 @@ theme: minimal-mistakes-jekyll
 #   - vendor/ruby/
 
 
-remote_theme: "mmistakes/minimal-mistakes@4.23.0"
+#remote_theme: "mmistakes/minimal-mistakes@4.23.0"
 
 
 words_per_minute         : 200
