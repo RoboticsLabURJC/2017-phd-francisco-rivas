@@ -29,7 +29,7 @@ markdown: kramdown
 theme: minimal-mistakes-jekyll
 plugins:
   - jekyll-feed
-  - jekyll-include-cacheo
+  - jekyll-include-cache
 
 
 # Exclude from processing.
