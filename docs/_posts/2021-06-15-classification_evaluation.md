@@ -14,6 +14,14 @@ tags:
 
 author: Francisco Rivas
 pinned: false
+
+
+gallery:
+  - url: /assets/images/classification/mobilenet/WV_3_2/w+v/confusion_matrix.png
+    image_path: /assets/images/classification/mobilenet/WV_3_2/w+v/confusion_matrix.png
+    alt: "WV_3_2_Confusion Matrix"
+    
+
 ---
 
 
@@ -31,6 +39,8 @@ In this experiment we want to evaluate the following configuration:
 |:-------:|:--------:|:--------:|:--------:|:--------:|
 | 0.9554| 0.976  | 0.972   | 0.998 | 1.0 |
 
-Confusion matrix: ![confusion_matrix](/2017-phd-francisco-rivas/assets/images/classification/mobilenet/WV_3_2/w+v/confusion_matrix.png)
+Confusion matrix:
+{% include gallery id="gallery" caption="" %}
+
 
 
