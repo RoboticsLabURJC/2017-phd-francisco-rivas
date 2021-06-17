@@ -111,6 +111,6 @@ Confusion matrix:
 
 
 ## Summary
-| Configuration | w Accuracy - RMSE | v Accuracy - RMSE | SimpleCircuit | Curves | Nurburgring | Montmelo |
+| Configuration | w Accuracy  RMSE | v Accuracy  RMSE | SimpleCircuit | Curves | Nurburgring | Montmelo |
 |:-------:|:--------:|:--------:|:--------:|:--------:|:--------:|:--------:|
-| WV_3_2 (w + v) | 0.976  | 0.972 | 66 | 130 | N/A - | N/A - |  
+| WV_3_2 (w + v) | 0.976  | 0.972 | 66 | 130 | N/A  | N/A  |  
