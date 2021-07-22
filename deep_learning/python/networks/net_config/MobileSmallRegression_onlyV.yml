@@ -1,0 +1,13 @@
+MobileSmallRegression3_V:
+  mode: regression
+  backend: mobilenet_v3_small
+  fc_head: pilotnet
+  loss_reduction: mean
+  pretrained: true
+  weight_loss: false
+  apply_vertical_flip: true
+  non_common_samples_mult_factor: 4
+  base_size: 320
+  batch_size: 50
+  regression_data :
+    - v

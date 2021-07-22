@@ -1,0 +1,11 @@
+MobileSmallRegression:
+  mode: regression
+  backend: vgg16
+  fc_head: custom_head
+  pretrained: true
+  weight_loss: false
+  base_size: 160
+  batch_size: 50
+  regression_data :
+    - w
+    - v

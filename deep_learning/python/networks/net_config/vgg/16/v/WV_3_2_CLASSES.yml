@@ -1,0 +1,16 @@
+WV_3_2_CLASSES:
+  mode: classification
+  backend: vgg16
+  fc_head: custom_head
+  pretrained: true
+  weight_loss: true
+  base_size: 160
+  batch_size: 40
+  classification_data:
+    v:
+      - fast:
+          input: [ None, 9]
+          output: 10
+      - moderate:
+          input: [ 9, None]
+          output: 5

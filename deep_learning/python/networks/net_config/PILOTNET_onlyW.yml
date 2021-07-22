@@ -1,0 +1,10 @@
+PILOTNET_W:
+  mode: regression
+  backend: pilotnet
+  fc_head: pilotnet
+  pretrained: true
+  weight_loss: false
+  base_size: 320
+  batch_size: 50
+  regression_data :
+    - w

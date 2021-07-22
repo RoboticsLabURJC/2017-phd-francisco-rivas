@@ -77,7 +77,7 @@ class VisualControlSimulated(Dataset):
         composed_transforms = A.Compose([
             # A.HorizontalFlip(),
             # A.Rotate(),
-            A.RandomScale(0.2),
+            # A.RandomScale(0.2),
             A.LongestMaxSize(self.base_size, always_apply=True),
             A.PadIfNeeded(self.base_size, self.base_size, always_apply=True,
                           border_mode=cv2.BORDER_CONSTANT),

@@ -19,7 +19,7 @@ def add_arrow_prediction(image:np.ndarray, pred:dict):
     cv2.rectangle(image, arrow_box[0:2], arrow_box[2:], (255,0,0))
 
     signed = 1 if pred["w"] < 0 else -1
-    angle = 90 - (abs(pred["w"])/2.2) * 90
+    angle = 90 - ((abs(pred["w"])/2.2) * 90)
 
     h = np.arctan(math.radians(angle))
 

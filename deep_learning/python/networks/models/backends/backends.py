@@ -6,7 +6,9 @@ from torchvision.models.resnet import resnet18
 AVAILABLE_BACKENDS=[
     "mobilenet_v3_small",
     "mobilenet_v3_large",
-    "pilotnet"
+    "pilotnet",
+    "resnet34",
+    "vgg16"
 ]
 
 
@@ -20,5 +22,9 @@ def get_backend_by_name(backend_name):
         return torchvision.models.mobilenet_v3_small
     elif backend_name == "pilotnet":
         return PilotNet
+    elif backend_name == "resnet34":
+        return torchvision.models.resnet34
+    elif backend_name == "vgg16":
+        return torchvision.models.vgg11
 
     return None

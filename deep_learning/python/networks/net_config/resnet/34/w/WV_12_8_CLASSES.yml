@@ -1,0 +1,46 @@
+WV_10_8_CLASSES:
+  mode: classification
+  backend: resnet34
+  fc_head: custom_head
+  pretrained: true
+  weight_loss: true
+  base_size: 418
+  batch_size: 40
+  classification_data:
+    w:
+      - l6:
+          input: [ None, 2.5 ]
+          output: 3
+      - l5:
+          input: [ 2.5, 2]
+          output: 2.2
+      - l4:
+          input: [ 2, 1.5]
+          output: 1.7
+      - l3:
+          input: [ 1.5, 1]
+          output: 1.2
+      - l2:
+          input: [ 1, 0.5 ]
+          output: 0.7
+      - l1:
+          input: [ 0.5, 0 ]
+          output: 0
+      - r1:
+          input: [ 0, -0.5 ]
+          output: 0
+      - r2:
+          input: [ -0.5, -1 ]
+          output: -0.7
+      - r3:
+          input: [ -1, -1.5 ]
+          output: -1.2
+      - r4:
+          input: [ -1.5, -2 ]
+          output: -1.7
+      - r5:
+          input: [ -2, -2.5 ]
+          output: -2.2
+      - r6:
+          input: [ -2.5, None ]
+          output: -3

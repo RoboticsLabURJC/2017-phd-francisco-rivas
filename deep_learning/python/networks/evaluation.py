@@ -7,6 +7,8 @@ from albumentations.pytorch import ToTensorV2
 from torch.utils.data._utils.collate import default_collate
 from tqdm import tqdm
 import pandas as pd
+
+from visual_control_utils.check_point_loader import load_best_model
 from visual_control_utils.plot_utils import plot_confusion_matrix
 from sklearn.metrics import accuracy_score
 
@@ -20,13 +22,10 @@ from visual_control_utils.visual_datset_format import load_dataset
 from visual_control_utils.visualization import add_labels_to_image, add_arrow_prediction
 import matplotlib.pyplot as plt
 
-if __name__ == "__main__":
-    dataset_path = "/home/frivas/Descargas/complete_dataset/"
-    checkpoint_path = "/home/frivas/devel/mio/github/2017-phd-francisco-rivas/deep_learning/python/networks/lightning_logs/version_0/checkpoints/rc-classification-epoch=12-val_acc=1.00-val_loss=0.05.ckpt"
-    # checkpoint_path = "/home/frivas/devel/mio/github/2017-phd-francisco-rivas/deep_learning/python/networks/lightning_logs/version_1/checkpoints/rc-classification-epoch=16-rmse=0.83-val_loss=0.72.ckpt"
-    checkpoint_path = "/home/frivas/devel/mio/github/2017-phd-francisco-rivas/deep_learning/python/networks/lightning_logs/version_3/checkpoints/rc-classification-epoch=65-val_acc=1.00-val_loss=0.07.ckpt"
-    # checkpoint_path = "/home/frivas/devel/mio/github/2017-phd-francisco-rivas/deep_learning/python/networks/lightning_logs/version_4/checkpoints/rc-classification-epoch=76-val_acc=0.95-val_loss=0.05.ckpt"
 
+
+def evaluate_model(dataset_path, model_path):
+    checkpoint_path = load_best_model(model_path)
 
     config_path = os.path.join(os.path.dirname(checkpoint_path), "..", "config.yaml")
 
@@ -39,12 +38,6 @@ if __name__ == "__main__":
         "images": test_images
     }
 
-
-    model = VisualControl.load_from_checkpoint(checkpoint_path=checkpoint_path, dataset_path=dataset_path, lr=5e-2,
-                          base_size=net_config.base_size, batch_size=net_config.batch_size, net_config=net_config)
-
-    # prints the learning_rate you used in this checkpoint
-
     eval_transforms = A.Compose([
         A.LongestMaxSize(net_config.base_size, always_apply=True),
         A.PadIfNeeded(net_config.base_size, net_config.base_size, always_apply=True,
@@ -53,6 +46,12 @@ if __name__ == "__main__":
         ToTensorV2()
     ])
 
+    model = VisualControl.load_from_checkpoint(checkpoint_path=checkpoint_path, dataset_path=dataset_path, lr=5e-2,
+                                               base_size=net_config.base_size, batch_size=net_config.batch_size,
+                                               net_config=net_config)
+
+    # prints the learning_rate you used in this checkpoint
+
     device = "cuda:0"
 
     model.to(device)
@@ -60,8 +59,6 @@ if __name__ == "__main__":
     model.freeze()
 
     results = {}
-
-
 
     visualize = False
     save = False
@@ -84,7 +81,6 @@ if __name__ == "__main__":
             images_batch.append(x["image"])
             labels.append(y)
 
-
         predictions = model(default_collate(images_batch).to(device))
         for idx in range(0, len(predictions)):
 
@@ -95,7 +91,7 @@ if __name__ == "__main__":
             else:
                 y_hat = predictions[idx].cpu().numpy()
             y = labels[idx]
-            results[idx+batch_idx] = {
+            results[idx + batch_idx] = {
                 "label": y,
                 "prediction": y_hat
             }
@@ -118,14 +114,13 @@ if __name__ == "__main__":
                     cv2.imshow("Test", image_labels)
                     cv2.waitKey(0)
                 if save:
-                    output_file = os.path.join(output_dir, "{}.jpg".format(idx+batch_idx))
+                    output_file = os.path.join(output_dir, "{}.jpg".format(idx + batch_idx))
                     cv2.imwrite(output_file, image_labels)
-
 
     if net_config.head_type == NetConfig.CLASSIFICATION_TYPE:
         final_stats = {}
-        gt = [ results[x]["label"] for x in results ]
-        pred = [ results[x]["prediction"] for x in results ]
+        gt = [results[x]["label"] for x in results]
+        pred = [results[x]["prediction"] for x in results]
         acc = accuracy_score(gt, pred)
         acc2 = accuracy_score(gt, pred, normalize=False)
         print(acc)
@@ -147,55 +142,86 @@ if __name__ == "__main__":
 
             controller_preds = []
             for controller_pred in pred:
-                controller_preds.append([ controller_pred[i] for i in indexes].index(1.0))
+                controller_preds.append([controller_pred[i] for i in indexes].index(1.0))
 
             acc1 = np.count_nonzero(np.abs(np.array(controller_preds) - np.array(controller_labels)) == 0)
             acc2 = np.count_nonzero(np.abs(np.array(controller_preds) - np.array(controller_labels)) <= 1)
 
             current_stats = {"acc1": acc1 / len(controller_preds),
-                              "acc2": acc2/ len(controller_preds)}
+                             "acc2": acc2 / len(controller_preds)}
 
             final_stats[controller] = current_stats
-
 
         out_json_stats = os.path.join(os.path.dirname(checkpoint_path), "..", "stats.json")
 
         json.dump(final_stats, open(out_json_stats, "w"), indent=4)
 
+        # confusion matrices
+
+        try:
+
+            final_data = {
+
+            }
+            for current_data in results:
+                gt = results[current_data]["label"]
+                pred = results[current_data]["prediction"]
+                class_data_gt = from_one_hot_to_class(gt, net_config)
+                class_data_pred = from_one_hot_to_class(pred, net_config)
+
+                for output_key in class_data_gt:
+                    if output_key not in final_data:
+                        final_data[output_key] = {
+                            "label": [],
+                            "prediction": []
+                        }
+                    final_data[output_key]["label"].append(class_data_gt[output_key])
+                    final_data[output_key]["prediction"].append(class_data_pred[output_key])
+
+            fig, axs = plt.subplots(1, 2)
+            fig.set_size_inches(15, 7, forward=True)
+
+            for idx, output_key in enumerate(final_data):
+                ax = axs[idx]
+                a = confusion_matrix(final_data[output_key]["label"], final_data[output_key]["prediction"],
+                                     normalize="true", labels=net_config.get_str_labels()[output_key])
+                plot_confusion_matrix(a, classes=net_config.get_str_labels()[output_key], title=output_key, ax=ax)
+
+            plt.tight_layout()
+            output_image_path = os.path.join(os.path.dirname(checkpoint_path), "..", "confusion_matrix.png")
+            plt.savefig(output_image_path)
+        except Exception as exc:
+            print(Exception)
+
+    else:
+        stats = {}
+        for result in results:
+            current_result = results[result]
+            for idx_controller, controller in enumerate(net_config.regression_data["controllers"]):
+                current_diff = np.square(current_result["label"][idx_controller] - current_result["prediction"][idx_controller])
+                if controller not in stats:
+                    stats[controller] = []
+                stats[controller].append(current_diff)
+
+        final_stats = {}
+        for controller in net_config.regression_data["controllers"]:
+            final_stats[controller] = { "rmse":  float(np.square(np.mean(stats[controller]))) }
+
+        out_json_stats = os.path.join(os.path.dirname(checkpoint_path), "..", "stats.json")
+        json.dump(final_stats, open(out_json_stats, "w"), indent=4)
+
+if __name__ == "__main__":
+    dataset_path = "/home/frivas/Descargas/complete_dataset/"
+    # checkpoint_path = "/home/frivas/devel/mio/github/2017-phd-francisco-rivas/deep_learning/python/networks/lightning_logs/version_0/checkpoints/rc-classification-epoch=12-val_acc=1.00-val_loss=0.05.ckpt"
+    # checkpoint_path = "/home/frivas/devel/mio/github/2017-phd-francisco-rivas/deep_learning/python/networks/lightning_logs/version_1/checkpoints/rc-classification-epoch=34-rmse=0.83-val_loss=0.72.ckpt"
+    # checkpoint_path = "/home/frivas/devel/mio/github/2017-phd-francisco-rivas/deep_learning/python/networks/lightning_logs/version_3/checkpoints/rc-classification-epoch=65-val_acc=1.00-val_loss=0.07.ckpt"
+    # checkpoint_path = "/home/frivas/devel/mio/github/2017-phd-francisco-rivas/deep_learning/python/networks/lightning_logs/version_4/checkpoints/rc-classification-epoch=76-val_acc=0.95-val_loss=0.05.ckpt"
+    # checkpoint_path = "/home/frivas/devel/mio/github/2017-phd-francisco-rivas/deep_learning/python/networks/lightning_logs/version_6/checkpoints/rc-classification-epoch=19-val_acc=1.00-val_loss=0.03.ckpt"
+    # checkpoint_path = "/home/frivas/devel/mio/github/2017-phd-francisco-rivas/deep_learning/python/networks/lightning_logs/version_7/checkpoints/rc-classification-epoch=12-val_acc=1.00-val_loss=0.09.ckpt"
+    # checkpoint_path = "/home/frivas/devel/mio/github/2017-phd-francisco-rivas/deep_learning/python/networks/lightning_logs/version_8/checkpoints/rc-classification-epoch=34-val_acc=0.98-val_loss=0.06.ckpt"
+    # checkpoint_path = "/home/frivas/devel/mio/github/2017-phd-francisco-rivas/deep_learning/python/networks/lightning_logs/version_9/checkpoints/rc-classification-epoch=33-val_acc=0.98-val_loss=0.05.ckpt"
 
 
+    model_path = "/home/frivas/devel/mio/github/2017-phd-francisco-rivas/deep_learning/python/networks/lightning_logs/version_14"
 
-
-
-        #confusion matrices
-
-        final_data = {
-
-        }
-        for current_data in results:
-            gt = results[current_data]["label"]
-            pred = results[current_data]["prediction"]
-            class_data_gt = from_one_hot_to_class(gt, net_config)
-            class_data_pred = from_one_hot_to_class(pred, net_config)
-
-            for output_key in class_data_gt:
-                if output_key not in final_data:
-                    final_data[output_key] = {
-                        "label": [],
-                        "prediction": []
-                    }
-                final_data[output_key]["label"].append(class_data_gt[output_key])
-                final_data[output_key]["prediction"].append(class_data_pred[output_key])
-
-        fig, axs = plt.subplots(1, 2)
-        fig.set_size_inches(15, 7, forward=True)
-
-        for idx, output_key in enumerate(final_data):
-            ax = axs[idx]
-            a = confusion_matrix(final_data[output_key]["label"], final_data[output_key]["prediction"], normalize="true")
-            plot_confusion_matrix(a, classes=net_config.get_str_labels()[output_key], title=output_key, ax=ax)
-
-
-        plt.tight_layout()
-        output_image_path = os.path.join(os.path.dirname(checkpoint_path), "..", "confusion_matrix.png")
-        plt.savefig(output_image_path)
+    evaluate_model(dataset_path, model_path)

@@ -1,0 +1,72 @@
+WV_10_8_CLASSES:
+  mode: classification
+  backend: vgg16
+  fc_head: custom_head
+  pretrained: true
+  weight_loss: true
+  base_size: 160
+  batch_size: 40
+  classification_data:
+    w:
+      - l6:
+          input: [ None, 2.5 ]
+          output: 3
+      - l5:
+          input: [ 2.5, 2]
+          output: 2.2
+      - l4:
+          input: [ 2, 1.5]
+          output: 1.7
+      - l3:
+          input: [ 1.5, 1]
+          output: 1.2
+      - l2:
+          input: [ 1, 0.5 ]
+          output: 0.7
+      - l1:
+          input: [ 0.5, 0 ]
+          output: 0
+      - r1:
+          input: [ 0, -0.5 ]
+          output: 0
+      - r2:
+          input: [ -0.5, -1 ]
+          output: -0.7
+      - r3:
+          input: [ -1, -1.5 ]
+          output: -1.2
+      - r4:
+          input: [ -1.5, -2 ]
+          output: -1.7
+      - r5:
+          input: [ -2, -2.5 ]
+          output: -2.2
+      - r6:
+          input: [ -2.5, None ]
+          output: -3
+
+    v:
+      - v8:
+          input: [ None, 14]
+          output: 14
+      - v7:
+          input: [ 14, 12]
+          output: 13
+      - v6:
+          input: [ 12, 10 ]
+          output: 11
+      - v5:
+          input: [ 10, 8 ]
+          output: 9
+      - v4:
+          input: [ 8, 6 ]
+          output: 7
+      - v3:
+          input: [ 6, 4 ]
+          output: 5
+      - v2:
+          input: [ 4, 2 ]
+          output: 3
+      - v1:
+          input: [ 2, None ]
+          output: 0

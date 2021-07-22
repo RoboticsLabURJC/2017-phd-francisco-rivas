@@ -1,7 +1,7 @@
-WV_9_4_CLASSES:
+WV_7_4_CLASSES:
   mode: classification
-  backend: mobilenet_v3_large
-  fc_head: mobilenet_v3_large
+  backend: resnet34
+  fc_head: custom_head
   pretrained: true
   weight_loss: true
   base_size: 418
@@ -29,19 +29,3 @@ WV_9_4_CLASSES:
       - radically_right:
           input: [-1, None]
           output: -1
-    v:
-      - very_fast:
-          input: [ None, 11]
-          output: 12
-      - fast:
-          input: [ 11, 9]
-          output: 10
-      - moderate:
-          input: [ 9 , 7]
-          output: 8
-      - slow:
-          input: [ 7 , 0]
-          output: 5
-      - negative:
-          input: [ 0, None]
-          output: 0

@@ -1,7 +1,7 @@
 WV_9_4_CLASSES:
   mode: classification
-  backend: mobilenet_v3_large
-  fc_head: mobilenet_v3_large
+  backend: resnet34
+  fc_head: custom_head
   pretrained: true
   weight_loss: true
   base_size: 418

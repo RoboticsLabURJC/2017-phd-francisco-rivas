@@ -50,16 +50,57 @@ class VisualControl(pl.LightningModule):
 
         self.model = get_backend_by_name(self.net_config.backend)(pretrained=self.net_config.pretrained)
 
-        if self.net_config.fc_head == "mobilenet_v3_large":
+        if self.net_config.fc_head == "custom_head":
+            try:
+                self.model.classifier = nn.Sequential(
+                    nn.Linear(self.model.classifier[0].in_features, int(self.model.classifier[0].in_features/2)),
+                    nn.Dropout(p=0.2, inplace=True),
+                    nn.Linear(int(self.model.classifier[0].in_features/2), 50),
+                    nn.Dropout(p=0.2, inplace=True),
+                    nn.Linear(50, self.num_classes),
+                )
+            except:
+                self.model.fc = nn.Sequential(
+                    nn.Linear(self.model.fc.in_features, int(self.model.fc.in_features / 2)),
+                    nn.Dropout(p=0.2, inplace=True),
+                    nn.Linear(int(self.model.fc.in_features / 2), 50),
+                    nn.Dropout(p=0.2, inplace=True),
+                    nn.Linear(50, self.num_classes),
+                )
+        elif self.net_config.fc_head == "mobilenet_v3_large":
+            try:
+                self.model.classifier = nn.Sequential(
+                    nn.Linear(self.model.classifier[0].in_features, 1280),
+                    nn.Hardswish(inplace=True),
+                    nn.Dropout(p=0.2, inplace=True),
+                    nn.Linear(1280, self.num_classes),
+                )
+            except:
+                self.model.fc = nn.Sequential(
+                    nn.Linear(self.model.fc.in_features, 1280),
+                    nn.Hardswish(inplace=True),
+                    nn.Dropout(p=0.2, inplace=True),
+                    nn.Linear(1280, self.num_classes),
+                )
+        elif self.net_config.fc_head == "mobilenet_v3_large_custom":
             self.model.classifier = nn.Sequential(
-                nn.Linear(self.model.classifier[0].in_features, 1280),
-                nn.Hardswish(inplace=True),
-                nn.Dropout(p=0.2, inplace=True),
-                nn.Linear(1280, self.num_classes),
+                nn.Linear(self.model.classifier[0].in_features, 2560),
+                # nn.Hardswish(inplace=True),
+                # nn.Dropout(p=0.2, inplace=True),
+                nn.Linear(2560, 1200),
+                # nn.Dropout(p=0.2, inplace=True),
+                nn.Linear(1200, 50),
+                nn.Linear(50, 10),
+                nn.Linear(10, self.num_classes),
             )
         elif self.net_config.fc_head == "pilotnet":
+            input_size = 69696
+            try:
+                input_size = self.model.classifier[0].in_features
+            except:
+                pass
             self.model.classifier = nn.Sequential(
-                nn.Linear(69696, 1164),
+                nn.Linear(input_size, 1164),
                 nn.Linear(1164, 100),
                 nn.Linear(100, 50),
                 nn.Linear(50, 10),
@@ -101,7 +142,7 @@ class VisualControl(pl.LightningModule):
             else:
                 loss_fn = nn.BCEWithLogitsLoss()
         elif self.net_config.head_type == NetConfig.REGRESSION_TYPE:
-            loss_fn = nn.MSELoss()
+            loss_fn = nn.MSELoss(reduction='sum')
         else:
             raise Exception("NetConfig head type: {} not supported".format(self.net_config.head_type))
 
@@ -130,12 +171,12 @@ class VisualControl(pl.LightningModule):
                         current_gt = y[idx].cpu().numpy()
                         current_gt = [current_gt[i] for i in self.net_config.softmax_config[output_key]]
                         gt.append(np.argmax(current_gt, axis=0))
+                    preds = torch.IntTensor(current_estimations).to(self.device)
+                    gt = torch.IntTensor(gt).to(self.device)
 
-                preds = torch.IntTensor(current_estimations).to(self.device)
-                gt = torch.IntTensor(gt).to(self.device)
-                key_acc = torchmetrics.functional.accuracy(preds, gt)
-                self.log('val_acc_{}'.format(output_key), key_acc, prog_bar=True)
-                acc.append(key_acc)
+                    key_acc = torchmetrics.functional.accuracy(preds, gt)
+                    self.log('val_acc_{}'.format(output_key), key_acc, prog_bar=True)
+                    acc.append(key_acc)
 
             acc = torch.mean(torch.FloatTensor(acc))
             if batch_idx == 0:
@@ -208,32 +249,49 @@ class VisualControl(pl.LightningModule):
     ####################
 
     def duplicate_with_vertical_flip(self, dataset):
-        duplicate_samples = True
-        if duplicate_samples:
-            extra_samples = {"labels": [],
-                             "images": [],
-                             "vertical_flip": []}
-            dataset["vertical_flip"] = []
-            for idx, sample in enumerate(dataset["labels"]):
-                dataset["vertical_flip"].append(0)
-                new_label = copy.copy(sample)
-                new_label["w"] = -new_label["w"]
-                extra_samples["vertical_flip"].append(1)
-                extra_samples["labels"].append(new_label)
-                extra_samples["images"].append(dataset["images"][idx])
+        extra_samples = {"labels": [],
+                         "images": [],
+                         "vertical_flip": []}
+        dataset["vertical_flip"] = []
+        for idx, sample in enumerate(dataset["labels"]):
+            dataset["vertical_flip"].append(0)
+            new_label = copy.copy(sample)
+            new_label["w"] = -new_label["w"]
+            extra_samples["vertical_flip"].append(1)
+            extra_samples["labels"].append(new_label)
+            extra_samples["images"].append(dataset["images"][idx])
 
-            dataset["labels"] += extra_samples["labels"]
-            dataset["images"] += extra_samples["images"]
-            dataset["vertical_flip"] += extra_samples["vertical_flip"]
+        dataset["labels"] += extra_samples["labels"]
+        dataset["images"] += extra_samples["images"]
+        dataset["vertical_flip"] += extra_samples["vertical_flip"]
 
-            #shufle
-            c = list(zip(dataset["labels"], dataset["images"], dataset["vertical_flip"]))
-            random.shuffle(c)
-            dataset["labels"], dataset["images"], dataset["vertical_flip"] = zip(*c)
+        #shufle
+        c = list(zip(dataset["labels"], dataset["images"], dataset["vertical_flip"]))
+        random.shuffle(c)
+        dataset["labels"], dataset["images"], dataset["vertical_flip"] = zip(*c)
 
         return dataset
 
+    def multiply_uncommon_samples(self, dataset, mult_factor):
+        if mult_factor > 0:
+            extra_samples = {"labels": [],
+                             "images": []}
+            for idx, sample in enumerate(dataset["labels"]):
+                if abs(sample["w"]) > 1:
+                    new_label = copy.copy(sample)
+                    extra_samples["labels"].append(new_label)
+                    extra_samples["images"].append(dataset["images"][idx])
 
+            for i in range(0, mult_factor):
+                dataset["labels"] += extra_samples["labels"]
+                dataset["images"] += extra_samples["images"]
+            c = list(zip(dataset["labels"], dataset["images"]))
+            random.shuffle(c)
+            dataset["labels"], dataset["images"] = zip(*c)
+            dataset["labels"] = list(dataset["labels"])
+            dataset["images"] = list(dataset["images"])
+
+        return dataset
 
     def prepare_data(self):
         train_data, train_images = load_dataset(self.dataset_path, "Train", "train.json")
@@ -255,8 +313,13 @@ class VisualControl(pl.LightningModule):
             "images": train_images[cut_valid_idx:],
         }
 
-        self.train_dict = self.duplicate_with_vertical_flip(self.train_dict)
-        self.valid_dict = self.duplicate_with_vertical_flip(self.valid_dict)
+        self.train_dict = self.multiply_uncommon_samples(self.train_dict, self.net_config.non_common_samples_mult_factor)
+        self.valid_dict = self.multiply_uncommon_samples(self.valid_dict, self.net_config.non_common_samples_mult_factor)
+
+
+        if self.net_config.apply_vertical_flip:
+            self.train_dict = self.duplicate_with_vertical_flip(self.train_dict)
+            self.valid_dict = self.duplicate_with_vertical_flip(self.valid_dict)
 
 
         test_data, test_images = load_dataset(self.dataset_path, "Test", "test.json")

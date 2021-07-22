@@ -25,6 +25,11 @@ class NetConfig:
             self._weight_loss = input_data[self.behaviour_name]["weight_loss"]
             self._base_size = input_data[self.behaviour_name]["base_size"]
             self._batch_size = input_data[self.behaviour_name]["batch_size"]
+            self._apply_vertical_flip = input_data[self.behaviour_name].get("apply_vertical_flip", True)
+            self._non_common_samples_mult_factor = input_data[self.behaviour_name].get("non_common_samples_mult_factor", 0)
+            self._loss_reduction = input_data[self.behaviour_name].get("loss_reduction", "mean")
+
+
 
             self._n_classes = None
             self._softmax_config = None
@@ -151,3 +156,15 @@ class NetConfig:
     @property
     def base_size(self):
         return self._base_size
+
+    @property
+    def apply_vertical_flip(self):
+        return self._apply_vertical_flip
+
+    @property
+    def non_common_samples_mult_factor(self):
+        return self._non_common_samples_mult_factor
+
+    @property
+    def loss_reduction(self):
+        return self._loss_reduction

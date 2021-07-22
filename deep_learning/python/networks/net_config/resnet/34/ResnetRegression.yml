@@ -1,0 +1,11 @@
+MobileSmallRegression:
+  mode: regression
+  backend: resnet34
+  fc_head: custom_head
+  pretrained: true
+  weight_loss: false
+  base_size: 320
+  batch_size: 50
+  regression_data :
+    - w
+    - v

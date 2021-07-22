@@ -5,11 +5,21 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from net_config.net_config import NetConfig
 from models.visual_control import VisualControl
 
+import argparse
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description='Train a network given a configuration file.')
+    parser.add_argument('--config_file', type=str, help='Input configuration file')
+
+    return parser.parse_args()
+
 if __name__ == "__main__":
+
+    arguments = parse_args()
     dataset_path = "/home/frivas/Descargas/complete_dataset"
 
-    network_config_file = "/home/frivas/devel/mio/github/2017-phd-francisco-rivas/deep_learning/python/networks/net_config/MobileSmallRegression.yml"
-
+    network_config_file = arguments.config_file
     net_config = NetConfig(network_config_file)
 
     model = VisualControl(dataset_path=dataset_path, lr=5e-2,
@@ -37,7 +47,7 @@ if __name__ == "__main__":
         filename='rc-classification-train-{epoch:02d}-{train_loss:.2f}-{val_loss:.2f}',
         mode="min")
 
-    trainer = pl.Trainer(gpus=1, max_epochs=100, progress_bar_refresh_rate=20,
+    trainer = pl.Trainer(gpus=1, max_epochs=50, progress_bar_refresh_rate=20,
                          callbacks=[checkpoint_callback_loss, checkpoint_callback_valid, checkpoint_callback_train])
     # trainer.tune(model)
     trainer.fit(model)

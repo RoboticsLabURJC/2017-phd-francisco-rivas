@@ -1,0 +1,26 @@
+WV_3_2_CLASSES:
+  mode: classification
+  backend: resnet34
+  fc_head: custom_head
+  pretrained: true
+  weight_loss: true
+  base_size: 418
+  batch_size: 40
+  classification_data:
+    w:
+      - left:
+          input: [ None, 0.2]
+          output: 1
+      - slight:
+          input: [ 0.2, -0.2]
+          output: 0
+      - right:
+          input: [ -0.2, None]
+          output: -1
+    v:
+      - fast:
+          input: [ None, 9]
+          output: 10
+      - moderate:
+          input: [ 9, None]
+          output: 5

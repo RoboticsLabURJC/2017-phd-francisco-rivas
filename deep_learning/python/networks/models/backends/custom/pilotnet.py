@@ -16,12 +16,15 @@ class PilotNet(nn.Module):
         self.conv2d_5 = nn.Conv2d(64, 64, 3, 1)
 
         self.classifier = nn.Sequential(
-            nn.Linear(1 * 18 * 64, 1164),
+            nn.Linear(69696, 1164),
+            # nn.Linear(1 * 18 * 64, 1164),
             nn.Linear(1164, 100),
             nn.Linear(100, 50),
             nn.Linear(50, 10),
             nn.Linear(10, 2),
         )
+
+
 
     def forward(self, x):
         x = self.bn_1(x)
