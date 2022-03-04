@@ -21,7 +21,7 @@ class PilotNet(nn.Module):
             nn.Linear(1164, 100),
             nn.Linear(100, 50),
             nn.Linear(50, 10),
-            nn.Linear(10, 2),
+            nn.Linear(10, 2)
         )
 
 

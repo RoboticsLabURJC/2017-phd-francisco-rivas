@@ -10,12 +10,12 @@ if __name__ == "__main__":
     out_df = pd.DataFrame()
     dataset_path = "/home/frivas/Descargas/complete_dataset/"
 
-    multiple_evaluation_file = "/home/frivas/devel/mio/github/BehaviorMetrics/behavior_metrics/000_v0_bag_analysis/default-multiple.yml"
-    stats_file = "/home/frivas/devel/mio/github/BehaviorMetrics/behavior_metrics/000_v0_bag_analysis/stats.json"
+    multiple_evaluation_file = "/home/frivas/devel/mio/github/BehaviorMetrics/behavior_metrics/configs/default-multiple4.yml"
+    stats_file = "/home/frivas/devel/mio/github/BehaviorMetrics/behavior_metrics/bag_analysis/stats.json"
 
     input_data = yaml.load(open(multiple_evaluation_file), Loader=yaml.FullLoader)
 
-    for element in input_data['Behaviors']['Robot']['Model']:
+    for element in input_data['Behaviors']['Robot']['Parameters']['Model']:
         internal_stats = {}
         paths_to_evaluate = []
         if isinstance(element, list):
@@ -35,7 +35,7 @@ if __name__ == "__main__":
 
     external_stats = json.load(open(stats_file))
 
-    for idx_run, element in enumerate(input_data['Behaviors']['Robot']['Model']):
+    for idx_run, element in enumerate(input_data['Behaviors']['Robot']['Parameters']['Model']):
         #get model_info
         multi_model = isinstance(element, list)
         if multi_model:
@@ -101,7 +101,7 @@ if __name__ == "__main__":
 
             out_df.loc[df_idx, "acc_v"] = acc["v"]
             out_df.loc[df_idx, "acc_w"] = acc["w"]
-            out_df.loc[df_idx, "acc_w"] = acc["w"]
+
 
 
             for idx_sample, sample_count in enumerate(range(idx_run*2, idx_run * 2 + 2)):

@@ -2,13 +2,15 @@
 import torchvision
 from models.backends.custom.pilotnet import PilotNet
 from torchvision.models.resnet import resnet18
+from models.backends.custom.smaller_vgg_net import SmallerVGGNet
 
 AVAILABLE_BACKENDS=[
     "mobilenet_v3_small",
     "mobilenet_v3_large",
     "pilotnet",
     "resnet34",
-    "vgg16"
+    "vgg16",
+    "smallervggnet"
 ]
 
 
@@ -26,5 +28,7 @@ def get_backend_by_name(backend_name):
         return torchvision.models.resnet34
     elif backend_name == "vgg16":
         return torchvision.models.vgg11
+    elif backend_name == "smallervggnet":
+        return SmallerVGGNet
 
     return None

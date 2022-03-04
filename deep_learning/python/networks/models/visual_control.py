@@ -106,25 +106,18 @@ class VisualControl(pl.LightningModule):
                 nn.Linear(50, 10),
                 nn.Linear(10, self.num_classes)
             )
-
-        # Define PyTorch model
-        # resnet = False
-        # if resnet:
-        #     self.model = torchvision.models.resnet50(pretrained=True)
-        #     self.model.fc = nn.Sequential(
-        #         nn.Linear(self.model.fc.in_features, 1280),
-        #         nn.Hardswish(inplace=True),
-        #         nn.Dropout(p=0.5, inplace=True),
-        #         nn.Linear(1280, self.num_classes),
-        #     )
-        # else:
-        #     self.model = torchvision.models.mobilenet_v3_large(pretrained=True)
-        #     self.model.classifier = nn.Sequential(
-        #         nn.Linear(self.model.classifier[0].in_features, 1280),
-        #         nn.Hardswish(inplace=True),
-        #         nn.Dropout(p=0.2, inplace=True),
-        #         nn.Linear(1280, self.num_classes),
-        #     )
+        elif self.net_config.fc_head == "smallervggnet":
+            input_size = 123008
+            try:
+                input_size = self.model.classifier[0].in_features
+            except:
+                pass
+            self.model.classifier = nn.Sequential(
+                nn.Linear(input_size, 1024),
+                nn.BatchNorm1d(1024),
+                nn.Dropout(p=0.5, inplace=True),
+                nn.Linear(1024, self.num_classes)
+            )
 
     def forward(self, x):
         x = self.model(x)
