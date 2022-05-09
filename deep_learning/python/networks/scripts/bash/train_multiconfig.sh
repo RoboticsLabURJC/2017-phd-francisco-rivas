@@ -1,45 +1,36 @@
 #!/bin/bash
 
-python train.py --config_file net_config/training_configurations/regression/mobile_large/exp1.yml
-python train.py --config_file net_config/training_configurations/regression/mobile_large/exp2.yml
-python train.py --config_file net_config/training_configurations/regression/mobile_large/exp3.yml
+python train.py --config_file net_config2/training_config/pilotnet/base.yml
+python train.py --config_file net_config2/training_config/pilotnet/base1.yml
+python train.py --config_file net_config2/training_config/pilotnet/base2.yml
+python train.py --config_file net_config2/training_config/pilotnet/base3.yml
+python train.py --config_file net_config2/training_config/pilotnet/base4.yml
+python train.py --config_file net_config2/training_config/pilotnet/base5.yml
+python train.py --config_file net_config2/training_config/pilotnet/base6.yml
+python train.py --config_file net_config2/training_config/pilotnet/base7.yml
+python train.py --config_file net_config2/training_config/pilotnet/base8.yml
+python train.py --config_file net_config2/training_config/pilotnet/base9.yml
+python train.py --config_file net_config2/training_config/pilotnet/base10.yml
+python train.py --config_file net_config2/training_config/pilotnet/base11.yml
+
+python train.py --config_file net_config2/training_config/mobilenet_v3_small/base.yml
+python train.py --config_file net_config2/training_config/mobilenet_v3_small/base1.yml
+python train.py --config_file net_config2/training_config/mobilenet_v3_small/base2.yml
+python train.py --config_file net_config2/training_config/mobilenet_v3_small/base3.yml
+python train.py --config_file net_config2/training_config/mobilenet_v3_small/base4.yml
+python train.py --config_file net_config2/training_config/mobilenet_v3_small/base5.yml
+python train.py --config_file net_config2/training_config/mobilenet_v3_small/base6.yml
+python train.py --config_file net_config2/training_config/mobilenet_v3_small/base7.yml
+python train.py --config_file net_config2/training_config/mobilenet_v3_small/base8.yml
+python train.py --config_file net_config2/training_config/mobilenet_v3_small/base9.yml
+python train.py --config_file net_config2/training_config/mobilenet_v3_small/base10.yml
+python train.py --config_file net_config2/training_config/mobilenet_v3_small/base11.yml
 
 
-python train.py --config_file net_config/training_configurations/regression/mobile_small/exp1.yml
-python train.py --config_file net_config/training_configurations/regression/mobile_small/exp2.yml
-python train.py --config_file net_config/training_configurations/regression/mobile_small/exp3.yml
 
-python train.py --config_file net_config/training_configurations/regression/pilot/exp1.yml
-python train.py --config_file net_config/training_configurations/regression/pilot/exp2.yml
-python train.py --config_file net_config/training_configurations/regression/pilot/exp3.yml
-
-#sleep 10800
-#python train.py --config_file net_config/training_configurations/7_4/large/exp1.yml
-#python train.py --config_file net_config/training_configurations/7_4/large/exp2.yml
-#python train.py --config_file net_config/training_configurations/7_4/large/exp3.yml
-#python train.py --config_file net_config/training_configurations/7_4/large/exp4.yml
-#python train.py --config_file net_config/training_configurations/7_4/large/exp5.yml
-#python train.py --config_file net_config/training_configurations/7_4/large/exp6.yml
-#python train.py --config_file net_config/training_configurations/7_4/large/exp7.yml
-#
-#python train.py --config_file net_config/training_configurations/7_4/small/exp1.yml
-#python train.py --config_file net_config/training_configurations/7_4/small/exp2.yml
-#python train.py --config_file net_config/training_configurations/7_4/small/exp3.yml
-#python train.py --config_file net_config/training_configurations/7_4/small/exp4.yml
-#python train.py --config_file net_config/training_configurations/7_4/small/exp5.yml
-#python train.py --config_file net_config/training_configurations/7_4/small/exp6.yml
-#python train.py --config_file net_config/training_configurations/7_4/small/exp7.yml
-
-#python train.py --config_file net_config/training_configurations/8_9/exp1.yml
-#python train.py --config_file net_config/training_configurations/8_9/exp2.yml
-#python train.py --config_file net_config/training_configurations/8_9/exp3.yml
-#python train.py --config_file net_config/training_configurations/8_9/exp4.yml
-#python train.py --config_file net_config/training_configurations/8_9/exp5.yml
-#python train.py --config_file net_config/training_configurations/8_9/exp6.yml
-#python train.py --config_file net_config/training_configurations/8_9/exp7.yml
-
-
-#python train.py --config_file net_config/SmallerVGG.yml
-
-
+python train.py --config_file net_config2/training_config/mobilenet_v3_classification/base_3_2.yml
+python train.py --config_file net_config2/training_config/mobilenet_v3_classification/base_7_4.yml
+python train.py --config_file net_config2/training_config/mobilenet_v3_classification/base_7_5.yml
+python train.py --config_file net_config2/training_config/mobilenet_v3_classification/base_9_4.yml
+python train.py --config_file net_config2/training_config/mobilenet_v3_classification/base_12_8.yml
 

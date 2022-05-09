@@ -63,7 +63,12 @@ class VisualControlSimulated(Dataset):
 
         image_filename = self.dataset["images"][index]
         raw_label = self.dataset["labels"][index]
-        image = cv2.imread(os.path.join(self._base_dir, "Images", image_filename))
+        if os.path.exists(os.path.join(self._base_dir, "Images", image_filename)):
+            image = cv2.imread(os.path.join(self._base_dir, "Images", image_filename))
+        else:
+            image = cv2.imread(image_filename)
+
+
         if "vertical_flip" in self.dataset:
             if self.dataset["vertical_flip"][index]:
                 image = cv2.flip(image, 1)

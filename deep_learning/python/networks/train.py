@@ -18,6 +18,9 @@ if __name__ == "__main__":
 
     arguments = parse_args()
     dataset_path = "/home/frivas/Descargas/complete_dataset"
+    dataset_path = "/home/frivas/devel/shared/mio/datasets_opencv"
+    # dataset_path = "/home/frivas/devel/mio/phd/dataset/datasets_opencv"
+
 
     network_config_file = arguments.config_file
     net_config = NetConfig(network_config_file)
@@ -47,7 +50,7 @@ if __name__ == "__main__":
         filename='rc-classification-train-{epoch:02d}-{train_loss:.2f}-{val_loss:.2f}',
         mode="min")
 
-    trainer = pl.Trainer(gpus=1, max_epochs=50, progress_bar_refresh_rate=20,
+    trainer = pl.Trainer(gpus=1, max_epochs=100, progress_bar_refresh_rate=20,
                          callbacks=[checkpoint_callback_loss, checkpoint_callback_valid, checkpoint_callback_train])
     # trainer.tune(model)
     trainer.fit(model)

@@ -29,7 +29,20 @@ class NetConfig:
             self._non_common_samples_mult_factor = input_data[self.behaviour_name].get("non_common_samples_mult_factor", 0)
             self._loss_reduction = input_data[self.behaviour_name].get("loss_reduction", "mean")
 
+            #new values
+            self._normalize_input = input_data[self.behaviour_name].get("normalize_input", False)
+            if self._normalize_input:
+                self._w_mean = input_data[self.behaviour_name]["normalization_values"]["w"]["mean"]
+                self._w_std = input_data[self.behaviour_name]["normalization_values"]["w"]["std"]
+                self._v_mean = input_data[self.behaviour_name]["normalization_values"]["v"]["mean"]
+                self._v_std = input_data[self.behaviour_name]["normalization_values"]["v"]["std"]
+            else:
+                self._w_mean = 0.0
+                self._w_std = 1.0
+                self._v_mean = 0.0
+                self._v_std = 1.0
 
+            self._dataset = input_data[self.behaviour_name]["dataset"]
 
             self._n_classes = None
             self._softmax_config = None
@@ -168,3 +181,11 @@ class NetConfig:
     @property
     def loss_reduction(self):
         return self._loss_reduction
+
+    @property
+    def norm_values(self):
+        return self._w_mean, self._w_std, self._v_mean, self._v_std
+
+    @property
+    def dataset(self):
+        return self._dataset

@@ -1,0 +1,23 @@
+Base:
+  mode: regression
+  backend: mobilenet_v3_small
+  fc_head: mobilenet_v3_large
+  loss_reduction: mean
+  pretrained: true
+  weight_loss: false
+  apply_vertical_flip: true
+  non_common_samples_mult_factor: 5
+  normalize_input: false
+  normalization_values:
+    w:
+      mean: 0.022858353022532127
+      std: 1.4345563776388153
+    v:
+      mean: 7.866023166023166
+      std: 3.528954557765074
+  dataset: new
+  base_size: 320
+  batch_size: 50
+  regression_data :
+    - w
+    - v

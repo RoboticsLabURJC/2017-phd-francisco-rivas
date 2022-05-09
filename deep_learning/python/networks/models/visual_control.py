@@ -11,7 +11,7 @@ import copy
 
 import pytorch_lightning as pl
 import torch
-from pytorch_lightning.metrics.functional import accuracy, precision_recall
+from torchmetrics.functional import accuracy, precision_recall
 from torch import nn
 from torch.optim import lr_scheduler
 from torch.utils.data import DataLoader
@@ -22,7 +22,7 @@ from net_config.net_config import NetConfig
 from dataloaders.visual_control_simulated import VisualControlSimulated
 from visual_control_utils.fix_json import read_malformed_json
 from visual_control_utils.logits_conversion import from_logit_to_estimation, from_logit_to_estimation_class
-from visual_control_utils.visual_datset_format import load_dataset
+from visual_control_utils.visual_datset_format import load_dataset, load_dataset_new
 from visual_control_utils.visualization import add_labels_to_image, add_arrow_prediction
 from models.backends.backends import get_backend_by_name
 
@@ -135,7 +135,7 @@ class VisualControl(pl.LightningModule):
             else:
                 loss_fn = nn.BCEWithLogitsLoss()
         elif self.net_config.head_type == NetConfig.REGRESSION_TYPE:
-            loss_fn = nn.MSELoss(reduction='sum')
+            loss_fn = nn.MSELoss(reduction=self.net_config.loss_reduction)
         else:
             raise Exception("NetConfig head type: {} not supported".format(self.net_config.head_type))
 
@@ -232,10 +232,23 @@ class VisualControl(pl.LightningModule):
 
     def configure_optimizers(self):
         # optimizer = torch.optim.SGD(self.parameters(), lr=self.learning_rate, weight_decay=0.9)
-        optimizer = torch.optim.Adam(self.parameters())
+        optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate)
         # self.exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=100, gamma=0.9)
-        return [optimizer] \
-            # , [self.exp_lr_scheduler]
+        # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+        #     optimizer, mode="min", factor=0.1, patience=5
+        # )
+        #
+        # return {
+        #     "optimizer": optimizer,
+        #     "lr_scheduler": {
+        #         "scheduler": scheduler,
+        #         "monitor": "val/loss",
+        #         "interval": "epoch",
+        #         "frequency": 1,
+        #     },
+        # }
+        return [optimizer]
+        #, [scheduler]
 
     ####################
     # DATA RELATED HOOKS
@@ -287,7 +300,11 @@ class VisualControl(pl.LightningModule):
         return dataset
 
     def prepare_data(self):
-        train_data, train_images = load_dataset(self.dataset_path, "Train", "train.json")
+        if self.net_config.dataset == "tfm":
+            train_data, train_images = load_dataset(self.dataset_path, "Train", "train.json")
+        else:
+            train_data, train_images = load_dataset_new(self.dataset_path, self.net_config)
+
         c = list(zip(train_data, train_images))
         random.shuffle(c)
         train_data, train_images = zip(*c)
@@ -315,12 +332,22 @@ class VisualControl(pl.LightningModule):
             self.valid_dict = self.duplicate_with_vertical_flip(self.valid_dict)
 
 
-        test_data, test_images = load_dataset(self.dataset_path, "Test", "test.json")
 
-        self.test_dict = {
-            "labels": test_data,
-            "images": test_images
-        }
+        #compute mean and std
+        v_values = [ x["v"] for x in self.train_dict["labels"]]
+        w_values = [ x["w"] for x in self.train_dict["labels"]]
+
+        print(f'V:\n\t{np.mean(v_values)}\n\t{np.std(v_values)}')
+        print(f'W:\n\t{np.mean(w_values)}\n\t{np.std(w_values)}')
+
+
+
+        # test_data, test_images = load_dataset(self.dataset_path, "Test", "test.json")
+        #
+        # self.test_dict = {
+        #     "labels": test_data,
+        #     "images": test_images
+        # }
 
     def setup(self, stage=None):
 
@@ -350,7 +377,12 @@ class VisualControl(pl.LightningModule):
             pass
 
     def train_dataloader(self):
-        train_set = VisualControlSimulated(os.path.join(self.dataset_path, "Train"), self.train_dict,
+        if self.net_config.dataset == "tfm":
+            base_path = os.path.join(self.dataset_path, "Train")
+        else:
+            base_path = self.dataset_path
+
+        train_set = VisualControlSimulated(base_path, self.train_dict,
                                            self.base_size, self.net_config, split='train')
         train_loader = DataLoader(train_set, batch_size=self.batch_size,
                                   num_workers=self.num_workers)
@@ -358,7 +390,12 @@ class VisualControl(pl.LightningModule):
         return train_loader
 
     def val_dataloader(self):
-        val_set = VisualControlSimulated(os.path.join(self.dataset_path, "Train"), self.valid_dict,
+        if self.net_config.dataset == "tfm":
+            base_path = os.path.join(self.dataset_path, "Train")
+        else:
+            base_path = self.dataset_path
+
+        val_set = VisualControlSimulated(base_path, self.valid_dict,
                                          self.base_size, self.net_config, split='val')
         valid_loader = DataLoader(val_set, batch_size=self.batch_size,
                                   num_workers=self.num_workers)

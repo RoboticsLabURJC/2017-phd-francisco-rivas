@@ -1,0 +1,56 @@
+Base:
+  mode: classification
+  backend: mobilenet_v3_small
+  fc_head: mobilenet_v3_large
+  loss_reduction: mean
+  pretrained: true
+  weight_loss: false
+  apply_vertical_flip: true
+  non_common_samples_mult_factor: 10
+  normalize_input: false
+  normalization_values:
+    w:
+      mean: -0.018824034575662323
+      std: 0.8792444830575991
+    v:
+      mean: 8.688572070049393
+      std: 4.7870690570321965
+  dataset: new
+  base_size: 320
+  batch_size: 50
+  classification_data:
+    w:
+      - radically_left:
+          input: [ None, 1]
+          output: 1
+      - moderately_left:
+          input: [ 1, 0.5]
+          output: 0.7
+      - slightly_left:
+          input: [ 0.5, 0.1]
+          output: 0.3
+      - slight:
+          input: [ 0.1, -0.1]
+          output: 0
+      - slightly_right:
+          input: [ -0.1, -0.5]
+          output: -0.3
+      - moderately_right:
+          input: [ -0.5, -1]
+          output: -0.7
+      - radically_right:
+          input: [-1, None]
+          output: -1
+    v:
+      - very_fast:
+          input: [ None, 11]
+          output: 12
+      - fast:
+          input: [ 11, 9]
+          output: 10
+      - moderate:
+          input: [ 9 , 7]
+          output: 7
+      - slow:
+          input: [ 7 , None]
+          output: 3

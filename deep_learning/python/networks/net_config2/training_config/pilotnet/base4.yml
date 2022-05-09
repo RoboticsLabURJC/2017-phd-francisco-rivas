@@ -1,0 +1,23 @@
+Base:
+  mode: regression
+  backend: pilotnet
+  fc_head: pilotnet
+  loss_reduction: mean
+  pretrained: true
+  weight_loss: false
+  apply_vertical_flip: true
+  non_common_samples_mult_factor: 2
+  normalize_input: false
+  normalization_values:
+    w:
+      mean: 0.013624448078495506
+      std: 1.2211992159797551
+    v:
+      mean: 8.225789043336059
+      std: 4.1481283264741355
+  dataset: new
+  base_size: 320
+  batch_size: 50
+  regression_data :
+    - w
+    - v
