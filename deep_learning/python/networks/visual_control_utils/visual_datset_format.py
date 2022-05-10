@@ -20,7 +20,8 @@ def load_dataset_new(dataset_path, net_config:NetConfig):
         "extended_simple_circuit_01_04_2022_clockwise_1",
         "many_curves_01_04_2022_clockwise_1",
         "monaco_01_04_2022_clockwise_1",
-        "nurburgring_01_04_2022_clockwise_1"
+        "nurburgring_01_04_2022_clockwise_1",
+        "only_curves_01_04_2022"
     ]
     train_data = []
     train_images = []
@@ -28,7 +29,7 @@ def load_dataset_new(dataset_path, net_config:NetConfig):
     w_mean, w_std, v_mean, v_std = net_config.norm_values
 
     for file_data in data_to_load:
-        if "difficult" in file_data:
+        if "difficult" in file_data or "only_curves" in file_data:
             all_files_to_process = os.listdir(os.path.join(dataset_path, file_data))
             current_dataset_path = os.path.join(dataset_path, file_data)
         else:

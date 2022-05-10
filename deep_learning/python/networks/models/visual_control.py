@@ -232,7 +232,8 @@ class VisualControl(pl.LightningModule):
 
     def configure_optimizers(self):
         # optimizer = torch.optim.SGD(self.parameters(), lr=self.learning_rate, weight_decay=0.9)
-        optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate)
+        # optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate)
+        optimizer = torch.optim.Adam(self.parameters())
         # self.exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=100, gamma=0.9)
         # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
         #     optimizer, mode="min", factor=0.1, patience=5
