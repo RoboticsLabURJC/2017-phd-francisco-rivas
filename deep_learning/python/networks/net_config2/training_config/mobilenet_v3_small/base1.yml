@@ -15,7 +15,7 @@ Base:
     v:
       mean: 8.688572070049393
       std: 4.7870690570321965
-  dataset: new
+  dataset: tfm
   base_size: 320
   batch_size: 50
   regression_data :

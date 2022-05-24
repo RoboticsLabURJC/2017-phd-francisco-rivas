@@ -10,12 +10,12 @@ Base:
   normalize_input: false
   normalization_values:
     w:
-      mean: 0.013624448078495506
-      std: 1.2211992159797551
+      mean: -0.025263235294117645
+      std: 0.8462687738294171
     v:
-      mean: 8.225789043336059
-      std: 4.1481283264741355
-  dataset: new
+      mean: 6.94344685242518
+      std: 2.9136962708741003
+  dataset: tfm
   base_size: 320
   batch_size: 50
   regression_data :
