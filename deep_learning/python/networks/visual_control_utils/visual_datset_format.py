@@ -13,16 +13,27 @@ def load_dataset(dataset_path, path_name, data_json_file):
 
 
 
-def load_dataset_new(dataset_path, net_config:NetConfig):
-    data_to_load = [
-        "difficult_situations_01_04_2022",
-        "difficult_situations_01_04_2022_2",
-        "extended_simple_circuit_01_04_2022_clockwise_1",
-        "many_curves_01_04_2022_clockwise_1",
-        "monaco_01_04_2022_clockwise_1",
-        "nurburgring_01_04_2022_clockwise_1",
-        "only_curves_01_04_2022"
-    ]
+def load_dataset_new(dataset_path, net_config:NetConfig, split:str="train"):
+
+    if split == "train":
+        data_to_load = [
+            "difficult_situations_01_04_2022",
+            "difficult_situations_01_04_2022_2",
+            "extended_simple_circuit_01_04_2022_clockwise_1",
+            "many_curves_01_04_2022_clockwise_1",
+            "monaco_01_04_2022_clockwise_1",
+            "nurburgring_01_04_2022_clockwise_1",
+            "only_curves_01_04_2022"
+        ]
+    else:
+        data_to_load = [
+            "simple_circuit_01_04_2022_anticlockwise_1",
+            "simple_circuit_01_04_2022_clockwise_1",
+            "montreal_12_05_2022_opencv_anticlockwise_1",
+            "montreal_12_05_2022_opencv_clockwise_1",
+            "montmelo_12_05_2022_opencv_anticlockwise_1",
+            "montmelo_12_05_2022_opencv_clockwise_1"
+        ]
     train_data = []
     train_images = []
 

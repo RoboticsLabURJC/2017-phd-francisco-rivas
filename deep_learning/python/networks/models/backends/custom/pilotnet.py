@@ -23,6 +23,21 @@ class PilotNet(nn.Module):
             nn.Linear(50, 10),
             nn.Linear(10, 2)
         )
+        # self._classifier = None
+        # self._classifier = self.get_classifier(13)
+
+    def get_classifier(self, n_features):
+        if self._classifier is None:
+            self._classifier = nn.Sequential(
+            nn.Linear(69696, 1164),
+            nn.Linear(1164, 100),
+            nn.Linear(100, 50),
+            nn.Linear(50, 10),
+            nn.Linear(10, 2)
+        )
+        return self._classifier
+
+        # return self._classifier.to("cuda:0")
 
 
 
@@ -39,5 +54,7 @@ class PilotNet(nn.Module):
         x = self.conv2d_5(x)
         x = torch.relu(x)
         x = torch.flatten(x, 1)
+        # x = self.get_classifier(n_features=x.size()[1])(x)
         x = self.classifier(x)
+
         return x

@@ -18,7 +18,7 @@ from net_config.net_config import NetConfig
 from models.visual_control import VisualControl
 from visual_control_utils.logits_conversion import from_logit_to_estimation, from_one_hot_to_class
 
-from visual_control_utils.visual_datset_format import load_dataset
+from visual_control_utils.visual_datset_format import load_dataset, load_dataset_new
 from visual_control_utils.visualization import add_labels_to_image, add_arrow_prediction
 import matplotlib.pyplot as plt
 
@@ -31,7 +31,14 @@ def evaluate_model(dataset_path, model_path):
 
     net_config = NetConfig(config_path)
 
-    test_data, test_images = load_dataset(dataset_path, "Test", "test.json")
+    if net_config.dataset == "tfm":
+        test_data, test_images = load_dataset(dataset_path, "Test", "test.json")
+    else:
+        test_data, test_images = load_dataset_new(dataset_path, net_config)
+
+    # test_data = test_data[0:10]
+    # test_images = test_images[0:10]
+
 
     test_dict = {
         "labels": test_data,
@@ -68,6 +75,8 @@ def evaluate_model(dataset_path, model_path):
             raise Exception("output dir already exists")
         os.mkdir(output_dir)
 
+    w_mean, w_std, v_mean, v_std = net_config.norm_values
+
     for batch_idx in tqdm(range(0, len(test_dict["labels"]), net_config.batch_size)):
         images_batch = []
         labels = []
@@ -91,10 +100,19 @@ def evaluate_model(dataset_path, model_path):
             else:
                 y_hat = predictions[idx].cpu().numpy()
             y = labels[idx]
+
+            y_hat[0] = (y_hat[0] * w_std) + w_mean
+            y_hat[1] = (y_hat[1] * v_std) + v_mean
+
+            y[0] = (y[0] * w_std) + w_mean
+            y[1] = (y[1] * v_std) + v_mean
+
             results[idx + batch_idx] = {
                 "label": y,
                 "prediction": y_hat
             }
+
+
 
             if visualize or save:
                 if visualize:

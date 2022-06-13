@@ -3,7 +3,7 @@ Base:
   backend: pilotnet
   fc_head: pilotnet
   loss_reduction: sum
-  pretrained: true
+  pretrained: false
   weight_loss: false
   apply_vertical_flip: true
   non_common_samples_mult_factor: 10
@@ -15,9 +15,9 @@ Base:
     v:
       mean: 6.18136387298282
       std: 2.466514191627031
-  dataset: tfm
+  dataset: new
   base_size: 240
-  batch_size: 50
+  batch_size: 100
   regression_data :
     - w
     - v

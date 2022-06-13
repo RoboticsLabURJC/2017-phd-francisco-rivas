@@ -20,8 +20,9 @@ if __name__ == "__main__":
 
     arguments = parse_args()
     dataset_path = "/home/frivas/Descargas/complete_dataset"
-    dataset_path = "/home/frivas/devel/shared/mio/datasets_opencv"
-    dataset_path = "/home/frivas/devel/mio/phd/dataset/datasets_opencv"
+    dataset_path = "/home/frivas/Descargas/datasets_opencv"
+    # dataset_path = "/home/frivas/devel/shared/mio/datasets_opencv"
+    # dataset_path = "/home/frivas/devel/mio/phd/dataset/datasets_opencv"
     # dataset_path = "/home/frivas/devel/shared/mio/datasets_opencv"
     # dataset_path = "/home/frivas/devel/mio/phd/dataset/datasets_opencv"
 

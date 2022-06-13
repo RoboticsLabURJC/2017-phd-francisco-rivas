@@ -284,10 +284,26 @@ class VisualControl(pl.LightningModule):
             extra_samples = {"labels": [],
                              "images": []}
             for idx, sample in enumerate(dataset["labels"]):
-                if abs(sample["w"]) > 1:
+                if abs(sample["w"]) > 4:
                     new_label = copy.copy(sample)
-                    extra_samples["labels"].append(new_label)
-                    extra_samples["images"].append(dataset["images"][idx])
+                    for i in range(0, 15):
+                        extra_samples["labels"].append(new_label)
+                        extra_samples["images"].append(dataset["images"][idx])
+                elif abs(sample["w"]) > 3:
+                    new_label = copy.copy(sample)
+                    for i in range(0, 10):
+                        extra_samples["labels"].append(new_label)
+                        extra_samples["images"].append(dataset["images"][idx])
+                elif abs(sample["w"]) > 2:
+                    new_label = copy.copy(sample)
+                    for i in range(0, 5):
+                        extra_samples["labels"].append(new_label)
+                        extra_samples["images"].append(dataset["images"][idx])
+                elif abs(sample["w"]) > 0.8:
+                    new_label = copy.copy(sample)
+                    for i in range(0, 3):
+                        extra_samples["labels"].append(new_label)
+                        extra_samples["images"].append(dataset["images"][idx])
 
             for i in range(0, mult_factor):
                 dataset["labels"] += extra_samples["labels"]
